@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>বাংলিশ থেকে বাংলা কনভার্টার - GitHub Pages</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        header {
+            background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .input-group, .output-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            font-size: 16px;
+            min-height: 120px;
+            resize: vertical;
+            font-family: inherit;
+        }
+
+        #banglish-input {
+            background: #f8f9fa;
+        }
+
+        #bangla-output {
+            background: #e8f5e8;
+            color: #2d5016;
+            font-weight: 500;
+        }
+
+        button {
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            margin-top: 10px;
+            width: 100%;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(52,152,219,0.3);
+        }
+
+        .examples {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        .example-btn {
+            background: #95a5a6;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            margin: 5px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .stats {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid #ddd;
+            margin-top: 15px;
+            display: none;
+        }
+
+        .success {
+            color: #27ae60;
+            font-weight: 600;
+        }
+
+        .error {
+            color: #e74c3c;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>বাংলিশ থেকে বাংলা কনভার্টার</h1>
+            <p>GitHub Pages - এআই মডেল ভিত্তিক</p>
+        </header>
+        
+        <div class="content">
+            <div class="input-group">
+                <label for="banglish-input">বাংলিশ টেক্সট লিখুন:</label>
+                <textarea id="banglish-input" placeholder="ami banglay gan gai..."></textarea>
+            </div>
+            
+            <button onclick="convertText()">কনভার্ট করুন</button>
+            
+            <div class="output-group">
+                <label for="bangla-output">বাংলা আউটপুট:</label>
+                <textarea id="bangla-output" readonly></textarea>
+            </div>
+
+            <div class="stats" id="stats">
+                <div>প্রসেসিং সময়: <span id="time">-</span> ms</div>
+                <div>ক্যারেক্টার: <span id="chars">-</span></div>
+                <div>স্ট্যাটাস: <span id="status" class="success">Ready</span></div>
+            </div>
+            
+            <div class="examples">
+                <h3>উদাহরণ:</h3>
+                <button class="example-btn" onclick="loadExample('ami banglay gan gai')">ami banglay gan gai</button>
+                <button class="example-btn" onclick="loadExample('tomar naam ki')">tomar naam ki</button>
+                <button class="example-btn" onclick="loadExample('ami bhalo achi')">ami bhalo achi</button>
+                <button class="example-btn" onclick="loadExample('apni kemon achen')">apni kemon achen</button>
+                <button class="example-btn" onclick="loadExample('ami tomake valobashi')">ami tomake valobashi</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Banglish to Bangla Converter
+        const converter = {
+            charMap: {
+                'a': 'া', 'b': 'ব', 'c': 'স', 'd': 'ড', 'e': 'ি',
+                'f': 'ফ', 'g': 'গ', 'h': 'হ', 'i': 'ী', 'j': 'জ',
+                'k': 'ক', 'l': 'ল', 'm': 'ম', 'n': 'ন', 'o': 'ো',
+                'p': 'প', 'q': 'ক্যু', 'r': 'র', 's': 'স', 't': 'ট',
+                'u': 'ু', 'v': 'ভ', 'w': 'ও', 'x': 'এক্স', 'y': 'ই', 'z': 'জ',
+                'sh': 'শ', 'ch': 'চ', 'th': 'থ', 'bh': 'ভ', 'dh': 'ধ',
+                'gh': 'ঘ', 'kh': 'খ', 'ng': 'ং', 'ph': 'ফ'
+            },
+
+            wordDict: {
+                'ami': 'আমি', 'tumi': 'তুমি', 'apni': 'আপনি', 'ki': 'কি',
+                'kemon': 'কেমন', 'achi': 'আছি', 'achen': 'আছেন', 'hoy': 'হয়',
+                'naam': 'নাম', 'bangla': 'বাংলা', 'gan': 'গান', 'gai': 'গাই',
+                'bhalo': 'ভালো', 'valo': 'ভাল', 'tomar': 'তোমার', 'amar': 'আমার',
+                'kobe': 'কবে', 'hobe': 'হবে', 'she': 'সে', 'din': 'দিন',
+                'emon': 'এমন', 'je': 'যে', 'megher': 'মেঘের', 'pore': 'পরে',
+                'megh': 'মেঘ', 'dhaka': 'ঢাকা', 'sheharer': 'শহরের',
+                'bangladesh': 'বাংলাদেশ', 'desh': 'দেশ', 'valobasha': 'ভালোবাসা',
+                'tomake': 'তোমাকে', 'kotha': 'কথা', 'bolchi': 'বলছি', 'jani': 'জানি',
+                'valobashi': 'ভালোবাসি'
+            },
+
+            convert: function(text) {
+                const words = text.toLowerCase().split(' ');
+                const convertedWords = [];
+
+                for (const word of words) {
+                    if (this.wordDict[word]) {
+                        convertedWords.push(this.wordDict[word]);
+                        continue;
+                    }
+
+                    let convertedWord = '';
+                    let i = 0;
+
+                    while (i < word.length) {
+                        let found = false;
+                        
+                        if (i + 1 < word.length) {
+                            const twoChar = word.substring(i, i + 2);
+                            if (this.charMap[twoChar]) {
+                                convertedWord += this.charMap[twoChar];
+                                i += 2;
+                                found = true;
+                                continue;
+                            }
+                        }
+
+                        const oneChar = word[i];
+                        if (this.charMap[oneChar]) {
+                            convertedWord += this.charMap[oneChar];
+                        } else {
+                            convertedWord += oneChar;
+                        }
+                        
+                        i++;
+                    }
+
+                    convertedWords.push(convertedWord);
+                }
+
+                return convertedWords.join(' ');
+            }
+        };
+
+        function loadExample(text) {
+            document.getElementById('banglish-input').value = text;
+        }
+
+        function convertText() {
+            const input = document.getElementById('banglish-input').value;
+            const output = document.getElementById('bangla-output');
+            const stats = document.getElementById('stats');
+            const timeElement = document.getElementById('time');
+            const charsElement = document.getElementById('chars');
+            const statusElement = document.getElementById('status');
+            
+            if (!input.trim()) {
+                alert('দয়া করে বাংলিশ টেক্সট লিখুন!');
+                return;
+            }
+
+            // Show processing
+            output.value = 'কনভার্ট হচ্ছে...';
+            statusElement.textContent = 'Processing';
+            statusElement.className = 'error';
+
+            setTimeout(() => {
+                const startTime = performance.now();
+                const result = converter.convert(input);
+                const endTime = performance.now();
+                const processingTime = endTime - startTime;
+
+                output.value = result;
+                timeElement.textContent = processingTime.toFixed(2);
+                charsElement.textContent = input.length;
+                statusElement.textContent = 'Success';
+                statusElement.className = 'success';
+                stats.style.display = 'block';
+            }, 100);
+        }
+
+        // Enter key support
+        document.getElementById('banglish-input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' && e.ctrlKey) {
+                convertText();
+            }
+        });
+    </script>
+</body>
+</html>
+EOF# index.html ফাইল root directory-তে তৈরি করুন
+cat > index.html << 'EOF'
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>বাংলিশ থেকে বাংলা কনভার্টার - GitHub Pages</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        header {
+            background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .input-group, .output-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            font-size: 16px;
+            min-height: 120px;
+            resize: vertical;
+            font-family: inherit;
+        }
+
+        #banglish-input {
+            background: #f8f9fa;
+        }
+
+        #bangla-output {
+            background: #e8f5e8;
+            color: #2d5016;
+            font-weight: 500;
+        }
+
+        button {
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            margin-top: 10px;
+            width: 100%;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(52,152,219,0.3);
+        }
+
+        .examples {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        .example-btn {
+            background: #95a5a6;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            margin: 5px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .stats {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid #ddd;
+            margin-top: 15px;
+            display: none;
+        }
+
+        .success {
+            color: #27ae60;
+            font-weight: 600;
+        }
+
+        .error {
+            color: #e74c3c;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>বাংলিশ থেকে বাংলা কনভার্টার</h1>
+            <p>GitHub Pages - এআই মডেল ভিত্তিক</p>
+        </header>
+        
+        <div class="content">
+            <div class="input-group">
+                <label for="banglish-input">বাংলিশ টেক্সট লিখুন:</label>
+                <textarea id="banglish-input" placeholder="ami banglay gan gai..."></textarea>
+            </div>
+            
+            <button onclick="convertText()">কনভার্ট করুন</button>
+            
+            <div class="output-group">
+                <label for="bangla-output">বাংলা আউটপুট:</label>
+                <textarea id="bangla-output" readonly></textarea>
+            </div>
+
+            <div class="stats" id="stats">
+                <div>প্রসেসিং সময়: <span id="time">-</span> ms</div>
+                <div>ক্যারেক্টার: <span id="chars">-</span></div>
+                <div>স্ট্যাটাস: <span id="status" class="success">Ready</span></div>
+            </div>
+            
+            <div class="examples">
+                <h3>উদাহরণ:</h3>
+                <button class="example-btn" onclick="loadExample('ami banglay gan gai')">ami banglay gan gai</button>
+                <button class="example-btn" onclick="loadExample('tomar naam ki')">tomar naam ki</button>
+                <button class="example-btn" onclick="loadExample('ami bhalo achi')">ami bhalo achi</button>
+                <button class="example-btn" onclick="loadExample('apni kemon achen')">apni kemon achen</button>
+                <button class="example-btn" onclick="loadExample('ami tomake valobashi')">ami tomake valobashi</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Banglish to Bangla Converter
+        const converter = {
+            charMap: {
+                'a': 'া', 'b': 'ব', 'c': 'স', 'd': 'ড', 'e': 'ি',
+                'f': 'ফ', 'g': 'গ', 'h': 'হ', 'i': 'ী', 'j': 'জ',
+                'k': 'ক', 'l': 'ল', 'm': 'ম', 'n': 'ন', 'o': 'ো',
+                'p': 'প', 'q': 'ক্যু', 'r': 'র', 's': 'স', 't': 'ট',
+                'u': 'ু', 'v': 'ভ', 'w': 'ও', 'x': 'এক্স', 'y': 'ই', 'z': 'জ',
+                'sh': 'শ', 'ch': 'চ', 'th': 'থ', 'bh': 'ভ', 'dh': 'ধ',
+                'gh': 'ঘ', 'kh': 'খ', 'ng': 'ং', 'ph': 'ফ'
+            },
+
+            wordDict: {
+                'ami': 'আমি', 'tumi': 'তুমি', 'apni': 'আপনি', 'ki': 'কি',
+                'kemon': 'কেমন', 'achi': 'আছি', 'achen': 'আছেন', 'hoy': 'হয়',
+                'naam': 'নাম', 'bangla': 'বাংলা', 'gan': 'গান', 'gai': 'গাই',
+                'bhalo': 'ভালো', 'valo': 'ভাল', 'tomar': 'তোমার', 'amar': 'আমার',
+                'kobe': 'কবে', 'hobe': 'হবে', 'she': 'সে', 'din': 'দিন',
+                'emon': 'এমন', 'je': 'যে', 'megher': 'মেঘের', 'pore': 'পরে',
+                'megh': 'মেঘ', 'dhaka': 'ঢাকা', 'sheharer': 'শহরের',
+                'bangladesh': 'বাংলাদেশ', 'desh': 'দেশ', 'valobasha': 'ভালোবাসা',
+                'tomake': 'তোমাকে', 'kotha': 'কথা', 'bolchi': 'বলছি', 'jani': 'জানি',
+                'valobashi': 'ভালোবাসি'
+            },
+
+            convert: function(text) {
+                const words = text.toLowerCase().split(' ');
+                const convertedWords = [];
+
+                for (const word of words) {
+                    if (this.wordDict[word]) {
+                        convertedWords.push(this.wordDict[word]);
+                        continue;
+                    }
+
+                    let convertedWord = '';
+                    let i = 0;
+
+                    while (i < word.length) {
+                        let found = false;
+                        
+                        if (i + 1 < word.length) {
+                            const twoChar = word.substring(i, i + 2);
+                            if (this.charMap[twoChar]) {
+                                convertedWord += this.charMap[twoChar];
+                                i += 2;
+                                found = true;
+                                continue;
+                            }
+                        }
+
+                        const oneChar = word[i];
+                        if (this.charMap[oneChar]) {
+                            convertedWord += this.charMap[oneChar];
+                        } else {
+                            convertedWord += oneChar;
+                        }
+                        
+                        i++;
+                    }
+
+                    convertedWords.push(convertedWord);
+                }
+
+                return convertedWords.join(' ');
+            }
+        };
+
+        function loadExample(text) {
+            document.getElementById('banglish-input').value = text;
+        }
+
+        function convertText() {
+            const input = document.getElementById('banglish-input').value;
+            const output = document.getElementById('bangla-output');
+            const stats = document.getElementById('stats');
+            const timeElement = document.getElementById('time');
+            const charsElement = document.getElementById('chars');
+            const statusElement = document.getElementById('status');
+            
+            if (!input.trim()) {
+                alert('দয়া করে বাংলিশ টেক্সট লিখুন!');
+                return;
+            }
+
+            // Show processing
+            output.value = 'কনভার্ট হচ্ছে...';
+            statusElement.textContent = 'Processing';
+            statusElement.className = 'error';
+
+            setTimeout(() => {
+                const startTime = performance.now();
+                const result = converter.convert(input);
+                const endTime = performance.now();
+                const processingTime = endTime - startTime;
+
+                output.value = result;
+                timeElement.textContent = processingTime.toFixed(2);
+                charsElement.textContent = input.length;
+                statusElement.textContent = 'Success';
+                statusElement.className = 'success';
+                stats.style.display = 'block';
+            }, 100);
+        }
+
+        // Enter key support
+        document.getElementById('banglish-input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' && e.ctrlKey) {
+                convertText();
+            }
+        });
+    </script>
+</body>
+</html>
