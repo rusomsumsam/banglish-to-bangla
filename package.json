@@ -1,0 +1,14 @@
+{
+  "name": "banglish-to-bangla",
+  "version": "1.0.0",
+  "description": "Transformer-based Banglish to Bengali text converter",
+  "main": "index.js",
+  "scripts": {
+    "build": "echo 'Building for Netlify...'"
+  },
+  "keywords": ["nlp", "bengali", "banglish", "transformer", "ai"],
+  "author": "Your Name",
+  "license": "MIT",
+  "dependencies": {},
+  "devDependencies": {}
+}
