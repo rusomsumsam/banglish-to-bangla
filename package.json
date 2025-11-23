@@ -1,12 +1,23 @@
 {
-  "name": "banglish-to-bangla",
+  "name": "banglish-to-bangla-converter",
   "version": "1.0.0",
-  "description": "Banglish to Bengali Text Converter",
-  "main": "index.js",
+  "description": "A professional Banglish to Bengali text converter",
+  "main": "index.html",
   "scripts": {
-    "build": "echo 'No build required for static site'"
+    "start": "live-server --port=3000",
+    "dev": "live-server --port=3000 --watch=.",
+    "serve": "python -m http.server 8000"
   },
-  "keywords": ["banglish", "bengali", "nlp", "converter"],
-  "author": "Your Name",
-  "license": "MIT"
+  "keywords": [
+    "banglish",
+    "bengali",
+    "converter",
+    "nlp",
+    "ai"
+  ],
+  "author": "Sumaiya Binte Mostofa",
+  "license": "MIT",
+  "devDependencies": {
+    "live-server": "^1.2.2"
+  }
 }

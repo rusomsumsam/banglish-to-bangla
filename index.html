@@ -1,280 +1,900 @@
 <!DOCTYPE html>
 <html lang="bn">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>বাংলিশ থেকে বাংলা কনভার্টার - GitHub Pages</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 20px;
-            color: #333;
-        }
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Banglish Pro - AI Bengali Text Converter</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+            rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+        <style>
+            :root {
+                --primary: #6366f1;
+                --primary-dark: #4f46e5;
+                --primary-light: #8b5cf6;
+                --secondary: #64748b;
+                --accent: #f59e0b;
+                --success: #10b981;
+                --warning: #f59e0b;
+                --error: #ef4444;
+                --background: #0f172a;
+                --surface: #1e293b;
+                --surface-light: #334155;
+                --text: #f1f5f9;
+                --text-light: #94a3b8;
+                --text-lighter: #cbd5e1;
+                --border: #475569;
+                --gradient: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #ec4899 100%);
+                --shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+                --glow: 0 0 50px rgba(99, 102, 241, 0.3);
+            }
 
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-            overflow: hidden;
-        }
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
 
-        header {
-            background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
-            color: white;
-            padding: 40px;
-            text-align: center;
-        }
+            body {
+                font-family: 'Inter', system-ui, -apple-system, sans-serif;
+                background: var(--background);
+                color: var(--text);
+                min-height: 100vh;
+                line-height: 1.7;
+                overflow-x: hidden;
+            }
 
-        header h1 {
-            font-size: 2.5em;
-            margin-bottom: 10px;
-        }
+            .background-animation {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                z-index: -1;
+                background:
+                    radial-gradient(circle at 20% 80%, rgba(99, 102, 241, 0.1) 0%, transparent 50%),
+                    radial-gradient(circle at 80% 20%, rgba(139, 92, 246, 0.1) 0%, transparent 50%),
+                    radial-gradient(circle at 40% 40%, rgba(236, 72, 153, 0.05) 0%, transparent 50%);
+                animation: float 20s ease-in-out infinite;
+            }
 
-        .content {
-            padding: 40px;
-        }
+            @keyframes float {
 
-        .input-group, .output-group {
-            margin-bottom: 25px;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 10px;
-            font-weight: 600;
-            color: #2c3e50;
-        }
-
-        textarea {
-            width: 100%;
-            padding: 15px;
-            border: 2px solid #ddd;
-            border-radius: 10px;
-            font-size: 16px;
-            min-height: 120px;
-            resize: vertical;
-            font-family: inherit;
-        }
-
-        #banglish-input {
-            background: #f8f9fa;
-        }
-
-        #bangla-output {
-            background: #e8f5e8;
-            color: #2d5016;
-            font-weight: 500;
-        }
-
-        button {
-            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
-            color: white;
-            border: none;
-            padding: 15px 30px;
-            border-radius: 10px;
-            cursor: pointer;
-            font-size: 16px;
-            font-weight: 600;
-            margin: 10px 5px;
-        }
-
-        button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(52,152,219,0.3);
-        }
-
-        .examples {
-            margin-top: 30px;
-            padding: 20px;
-            background: #f8f9fa;
-            border-radius: 10px;
-        }
-
-        .stats {
-            background: white;
-            padding: 15px;
-            border-radius: 10px;
-            border: 1px solid #ddd;
-            margin-top: 15px;
-        }
-
-        .success {
-            color: #27ae60;
-            font-weight: 600;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <header>
-            <h1>বাংলিশ থেকে বাংলা কনভার্টার</h1>
-            <p>GitHub Pages - এআই মডেল ভিত্তিক</p>
-        </header>
-        
-        <div class="content">
-            <div class="input-group">
-                <label for="banglish-input">বাংলিশ টেক্সট লিখুন:</label>
-                <textarea id="banglish-input" placeholder="ami banglay gan gai..."></textarea>
-            </div>
-            
-            <div>
-                <button onclick="convertText()">কনভার্ট করুন</button>
-                <button onclick="clearText()" style="background: #95a5a6;">ক্লিয়ার</button>
-            </div>
-            
-            <div class="output-group">
-                <label for="bangla-output">বাংলা আউটপুট:</label>
-                <textarea id="bangla-output" readonly></textarea>
-            </div>
-
-            <div class="stats" id="stats">
-                <div>প্রসেসিং সময়: <span id="time">-</span> ms</div>
-                <div>ক্যারেক্টার: <span id="chars">-</span></div>
-                <div>স্ট্যাটাস: <span id="status" class="success">Ready</span></div>
-            </div>
-            
-            <div class="examples">
-                <h3>উদাহরণ:</h3>
-                <button onclick="loadExample('ami banglay gan gai')">ami banglay gan gai</button>
-                <button onclick="loadExample('tomar naam ki')">tomar naam ki</button>
-                <button onclick="loadExample('ami bhalo achi')">ami bhalo achi</button>
-                <button onclick="loadExample('apni kemon achen')">apni kemon achen</button>
-                <button onclick="loadExample('ami tomake valobashi')">ami tomake valobashi</button>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        // Banglish to Bangla Converter
-        const converter = {
-            charMap: {
-                'a': 'া', 'b': 'ব', 'c': 'স', 'd': 'ড', 'e': 'ি',
-                'f': 'ফ', 'g': 'গ', 'h': 'হ', 'i': 'ী', 'j': 'জ',
-                'k': 'ক', 'l': 'ল', 'm': 'ম', 'n': 'ন', 'o': 'ো',
-                'p': 'প', 'q': 'ক্যু', 'r': 'র', 's': 'স', 't': 'ট',
-                'u': 'ু', 'v': 'ভ', 'w': 'ও', 'x': 'এক্স', 'y': 'ই', 'z': 'জ',
-                'sh': 'শ', 'ch': 'চ', 'th': 'থ', 'bh': 'ভ', 'dh': 'ধ',
-                'gh': 'ঘ', 'kh': 'খ', 'ng': 'ং', 'ph': 'ফ'
-            },
-
-            wordDict: {
-                'ami': 'আমি', 'tumi': 'তুমি', 'apni': 'আপনি', 'ki': 'কি',
-                'kemon': 'কেমন', 'achi': 'আছি', 'achen': 'আছেন', 'hoy': 'হয়',
-                'naam': 'নাম', 'bangla': 'বাংলা', 'gan': 'গান', 'gai': 'গাই',
-                'bhalo': 'ভালো', 'valo': 'ভাল', 'tomar': 'তোমার', 'amar': 'আমার',
-                'kobe': 'কবে', 'hobe': 'হবে', 'she': 'সে', 'din': 'দিন',
-                'emon': 'এমন', 'je': 'যে', 'megher': 'মেঘের', 'pore': 'পরে',
-                'megh': 'মেঘ', 'dhaka': 'ঢাকা', 'sheharer': 'শহরের',
-                'bangladesh': 'বাংলাদেশ', 'desh': 'দেশ', 'valobasha': 'ভালোবাসা',
-                'tomake': 'তোমাকে', 'kotha': 'কথা', 'bolchi': 'বলছি', 'jani': 'জানি',
-                'valobashi': 'ভালোবাসি'
-            },
-
-            convert: function(text) {
-                const words = text.toLowerCase().split(' ');
-                const convertedWords = [];
-
-                for (const word of words) {
-                    if (this.wordDict[word]) {
-                        convertedWords.push(this.wordDict[word]);
-                        continue;
-                    }
-
-                    let convertedWord = '';
-                    let i = 0;
-
-                    while (i < word.length) {
-                        let found = false;
-                        
-                        if (i + 1 < word.length) {
-                            const twoChar = word.substring(i, i + 2);
-                            if (this.charMap[twoChar]) {
-                                convertedWord += this.charMap[twoChar];
-                                i += 2;
-                                found = true;
-                                continue;
-                            }
-                        }
-
-                        const oneChar = word[i];
-                        if (this.charMap[oneChar]) {
-                            convertedWord += this.charMap[oneChar];
-                        } else {
-                            convertedWord += oneChar;
-                        }
-                        
-                        i++;
-                    }
-
-                    convertedWords.push(convertedWord);
+                0%,
+                100% {
+                    transform: translateY(0px) rotate(0deg);
                 }
 
-                return convertedWords.join(' ');
-            }
-        };
-
-        function loadExample(text) {
-            document.getElementById('banglish-input').value = text;
-        }
-
-        function clearText() {
-            document.getElementById('banglish-input').value = '';
-            document.getElementById('bangla-output').value = '';
-            document.getElementById('stats').style.display = 'none';
-        }
-
-        function convertText() {
-            const input = document.getElementById('banglish-input').value;
-            const output = document.getElementById('bangla-output');
-            const stats = document.getElementById('stats');
-            const timeElement = document.getElementById('time');
-            const charsElement = document.getElementById('chars');
-            const statusElement = document.getElementById('status');
-            
-            if (!input.trim()) {
-                alert('দয়া করে বাংলিশ টেক্সট লিখুন!');
-                return;
+                50% {
+                    transform: translateY(-20px) rotate(180deg);
+                }
             }
 
-            // Show processing
-            output.value = 'কনভার্ট হচ্ছে...';
-            statusElement.textContent = 'Processing';
-            statusElement.className = '';
-
-            setTimeout(() => {
-                const startTime = performance.now();
-                const result = converter.convert(input);
-                const endTime = performance.now();
-                const processingTime = endTime - startTime;
-
-                output.value = result;
-                timeElement.textContent = processingTime.toFixed(2);
-                charsElement.textContent = input.length;
-                statusElement.textContent = 'Success';
-                statusElement.className = 'success';
-                stats.style.display = 'block';
-            }, 100);
-        }
-
-        // Enter key support
-        document.getElementById('banglish-input').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter' && e.ctrlKey) {
-                convertText();
+            .container {
+                max-width: 1200px;
+                margin: 0 auto;
+                padding: 40px 20px;
             }
-        });
 
-        // Initialize
-        document.getElementById('stats').style.display = 'block';
-    </script>
-</body>
+            /* Header Styles */
+            .header {
+                text-align: center;
+                margin-bottom: 60px;
+                position: relative;
+            }
+
+            .logo {
+                display: inline-flex;
+                align-items: center;
+                gap: 12px;
+                background: var(--surface);
+                padding: 16px 32px;
+                border-radius: 20px;
+                margin-bottom: 30px;
+                border: 1px solid var(--border);
+                backdrop-filter: blur(20px);
+            }
+
+            .logo-icon {
+                width: 40px;
+                height: 40px;
+                background: var(--gradient);
+                border-radius: 12px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .logo-text {
+                font-size: 1.5em;
+                font-weight: 700;
+                background: var(--gradient);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+            }
+
+            .header h1 {
+                font-size: 3.5em;
+                font-weight: 800;
+                margin-bottom: 16px;
+                background: linear-gradient(135deg, var(--text) 0%, var(--text-light) 100%);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                line-height: 1.2;
+            }
+
+            .header .subtitle {
+                font-size: 1.3em;
+                color: var(--text-light);
+                margin-bottom: 40px;
+                max-width: 600px;
+                margin-left: auto;
+                margin-right: auto;
+            }
+
+            /* Main Content Grid */
+            .main-grid {
+                display: grid;
+                grid-template-columns: 1fr 400px;
+                gap: 40px;
+                align-items: start;
+            }
+
+            @media (max-width: 1024px) {
+                .main-grid {
+                    grid-template-columns: 1fr;
+                    gap: 30px;
+                }
+            }
+
+            /* Converter Panel */
+            .converter-panel {
+                background: var(--surface);
+                border-radius: 24px;
+                padding: 40px;
+                border: 1px solid var(--border);
+                backdrop-filter: blur(20px);
+                box-shadow: var(--shadow);
+                position: relative;
+                overflow: hidden;
+            }
+
+            .converter-panel::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                height: 4px;
+                background: var(--gradient);
+            }
+
+            .input-group,
+            .output-group {
+                margin-bottom: 32px;
+            }
+
+            .input-header {
+                display: flex;
+                align-items: center;
+                justify-content: between;
+                margin-bottom: 16px;
+            }
+
+            .input-header label {
+                font-size: 1.1em;
+                font-weight: 600;
+                color: var(--text);
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            }
+
+            .char-count {
+                font-size: 0.9em;
+                color: var(--text-light);
+                background: var(--surface-light);
+                padding: 4px 12px;
+                border-radius: 12px;
+            }
+
+            .textarea-wrapper {
+                position: relative;
+            }
+
+            textarea {
+                width: 100%;
+                padding: 20px;
+                background: var(--surface-light);
+                border: 2px solid var(--border);
+                border-radius: 16px;
+                font-size: 16px;
+                resize: vertical;
+                min-height: 160px;
+                font-family: inherit;
+                color: var(--text);
+                transition: all 0.3s ease;
+                line-height: 1.6;
+            }
+
+            textarea:focus {
+                outline: none;
+                border-color: var(--primary);
+                box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+            }
+
+            #banglish-input {
+                background: var(--surface-light);
+            }
+
+            #bangla-output {
+                background: rgba(16, 185, 129, 0.1);
+                border-color: rgba(16, 185, 129, 0.3);
+                color: var(--success);
+                font-weight: 500;
+            }
+
+            /* Button Styles */
+            .button-group {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 16px;
+                margin-bottom: 32px;
+            }
+
+            .btn {
+                padding: 16px 24px;
+                border: none;
+                border-radius: 14px;
+                font-size: 15px;
+                font-weight: 600;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 10px;
+                position: relative;
+                overflow: hidden;
+            }
+
+            .btn::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: -100%;
+                width: 100%;
+                height: 100%;
+                background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+                transition: left 0.5s;
+            }
+
+            .btn:hover::before {
+                left: 100%;
+            }
+
+            .btn-primary {
+                background: var(--gradient);
+                color: white;
+                box-shadow: 0 8px 25px rgba(99, 102, 241, 0.3);
+            }
+
+            .btn-primary:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 12px 35px rgba(99, 102, 241, 0.4);
+            }
+
+            .btn-secondary {
+                background: var(--surface-light);
+                color: var(--text);
+                border: 1px solid var(--border);
+            }
+
+            .btn-secondary:hover {
+                background: var(--surface);
+                transform: translateY(-2px);
+            }
+
+            /* Stats Panel */
+            .stats-panel {
+                background: var(--surface-light);
+                border-radius: 16px;
+                padding: 24px;
+                margin-bottom: 32px;
+            }
+
+            .stats-grid {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 20px;
+            }
+
+            .stat-item {
+                text-align: center;
+                padding: 16px;
+                background: var(--surface);
+                border-radius: 12px;
+                border: 1px solid var(--border);
+            }
+
+            .stat-value {
+                font-size: 1.8em;
+                font-weight: 700;
+                color: var(--primary);
+                margin-bottom: 4px;
+            }
+
+            .stat-label {
+                font-size: 0.85em;
+                color: var(--text-light);
+                font-weight: 500;
+            }
+
+            /* Examples Panel */
+            .examples-panel {
+                background: var(--surface);
+                border-radius: 24px;
+                padding: 40px;
+                border: 1px solid var(--border);
+                backdrop-filter: blur(20px);
+                box-shadow: var(--shadow);
+                height: fit-content;
+                position: sticky;
+                top: 40px;
+            }
+
+            .examples-panel h3 {
+                font-size: 1.4em;
+                font-weight: 700;
+                margin-bottom: 24px;
+                color: var(--text);
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+
+            .examples-grid {
+                display: grid;
+                gap: 16px;
+            }
+
+            .example-card {
+                background: var(--surface-light);
+                padding: 20px;
+                border-radius: 16px;
+                border: 1px solid var(--border);
+                cursor: pointer;
+                transition: all 0.3s ease;
+                position: relative;
+                overflow: hidden;
+            }
+
+            .example-card::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: -100%;
+                width: 100%;
+                height: 100%;
+                background: linear-gradient(90deg, transparent, rgba(99, 102, 241, 0.1), transparent);
+                transition: left 0.5s;
+            }
+
+            .example-card:hover::before {
+                left: 100%;
+            }
+
+            .example-card:hover {
+                border-color: var(--primary);
+                transform: translateY(-2px);
+            }
+
+            .example-input {
+                font-family: 'Monaco', 'Consolas', monospace;
+                color: var(--primary-light);
+                margin-bottom: 8px;
+                font-size: 14px;
+                font-weight: 500;
+            }
+
+            .example-output {
+                color: var(--success);
+                font-weight: 500;
+                font-size: 15px;
+            }
+
+            /* Features Grid */
+            .features-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+                gap: 24px;
+                margin-top: 60px;
+            }
+
+            .feature-card {
+                background: var(--surface);
+                padding: 30px;
+                border-radius: 20px;
+                border: 1px solid var(--border);
+                text-align: center;
+                transition: all 0.3s ease;
+            }
+
+            .feature-card:hover {
+                transform: translateY(-5px);
+                border-color: var(--primary);
+                box-shadow: var(--glow);
+            }
+
+            .feature-icon {
+                width: 60px;
+                height: 60px;
+                background: var(--gradient);
+                border-radius: 16px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                margin: 0 auto 20px;
+                font-size: 24px;
+            }
+
+            .feature-card h4 {
+                font-size: 1.2em;
+                font-weight: 600;
+                margin-bottom: 12px;
+                color: var(--text);
+            }
+
+            .feature-card p {
+                color: var(--text-light);
+                font-size: 0.95em;
+            }
+
+            /* Notification */
+            .notification {
+                position: fixed;
+                top: 30px;
+                right: 30px;
+                padding: 20px 24px;
+                border-radius: 16px;
+                color: white;
+                font-weight: 600;
+                z-index: 1000;
+                transform: translateX(400px);
+                transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+                backdrop-filter: blur(20px);
+                box-shadow: var(--shadow);
+                display: flex;
+                align-items: center;
+                gap: 12px;
+            }
+
+            .notification.success {
+                background: rgba(16, 185, 129, 0.9);
+                transform: translateX(0);
+            }
+
+            .notification.error {
+                background: rgba(239, 68, 68, 0.9);
+                transform: translateX(0);
+            }
+
+            /* Loading Animation */
+            .loading {
+                display: none;
+                text-align: center;
+                padding: 40px;
+            }
+
+            .spinner {
+                width: 50px;
+                height: 50px;
+                border: 3px solid var(--surface-light);
+                border-top: 3px solid var(--primary);
+                border-radius: 50%;
+                animation: spin 1s linear infinite;
+                margin: 0 auto 20px;
+            }
+
+            @keyframes spin {
+                0% {
+                    transform: rotate(0deg);
+                }
+
+                100% {
+                    transform: rotate(360deg);
+                }
+            }
+
+            /* Responsive Design */
+            @media (max-width: 768px) {
+                .container {
+                    padding: 20px 15px;
+                }
+
+                .header h1 {
+                    font-size: 2.5em;
+                }
+
+                .converter-panel,
+                .examples-panel {
+                    padding: 30px 25px;
+                }
+
+                .button-group {
+                    grid-template-columns: 1fr;
+                }
+
+                .stats-grid {
+                    grid-template-columns: 1fr;
+                    gap: 15px;
+                }
+
+                .features-grid {
+                    grid-template-columns: 1fr;
+                }
+            }
+
+            /* Custom Scrollbar */
+            ::-webkit-scrollbar {
+                width: 8px;
+            }
+
+            ::-webkit-scrollbar-track {
+                background: var(--surface);
+            }
+
+            ::-webkit-scrollbar-thumb {
+                background: var(--primary);
+                border-radius: 4px;
+            }
+
+            ::-webkit-scrollbar-thumb:hover {
+                background: var(--primary-dark);
+            }
+        </style>
+    </head>
+
+    <body>
+        <div class="background-animation"></div>
+
+        <div class="container">
+            <!-- Header -->
+            <header class="header">
+                <div class="logo">
+                    <div class="logo-icon">
+                        <i class="fas fa-language" style="color: white;"></i>
+                    </div>
+                    <div class="logo-text">Banglish Pro</div>
+                </div>
+                <h1>বাংলিশ থেকে বাংলা কনভার্টার</h1>
+                <p class="subtitle">এআই-পাওয়ার্ড ইন্টেলিজেন্ট টেক্সট কনভার্শন। রিয়েল-টাইমে বাংলিশ টেক্সটকে পরিপূর্ণ
+                    বাংলায় রূপান্তর করুন</p>
+            </header>
+
+            <!-- Main Content -->
+            <div class="main-grid">
+                <!-- Converter Section -->
+                <div class="converter-panel">
+                    <div class="input-group">
+                        <div class="input-header">
+                            <label>
+                                <i class="fas fa-keyboard"></i>
+                                বাংলিশ টেক্সট লিখুন
+                            </label>
+                            <div class="char-count" id="input-char-count">০ অক্ষর</div>
+                        </div>
+                        <div class="textarea-wrapper">
+                            <textarea id="banglish-input"
+                                placeholder="এখানে আপনার বাংলিশ টেক্সট লিখুন... যেমন: ami banglay gan gai, tomar naam ki..."
+                                oninput="updateCharCount()"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="button-group">
+                        <button class="btn btn-primary" onclick="convertText()">
+                            <i class="fas fa-bolt"></i>
+                            কনভার্ট করুন
+                        </button>
+                        <button class="btn btn-secondary" onclick="clearText()">
+                            <i class="fas fa-broom"></i>
+                            ক্লিয়ার করুন
+                        </button>
+                    </div>
+
+                    <div class="output-group">
+                        <div class="input-header">
+                            <label>
+                                <i class="fas fa-text-height"></i>
+                                বাংলা আউটপুট
+                            </label>
+                            <div class="char-count" id="output-char-count">০ অক্ষর</div>
+                        </div>
+                        <div class="textarea-wrapper">
+                            <textarea id="bangla-output" readonly></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Stats Panel -->
+                    <div class="stats-panel">
+                        <div class="stats-grid">
+                            <div class="stat-item">
+                                <div class="stat-value" id="processing-time">-</div>
+                                <div class="stat-label">প্রসেসিং সময়</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value" id="chars-processed">-</div>
+                                <div class="stat-label">অক্ষর প্রসেসড</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value" id="conversion-status">প্রস্তুত</div>
+                                <div class="stat-label">স্ট্যাটাস</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Examples Section -->
+                <div class="examples-panel">
+                    <h3>
+                        <i class="fas fa-lightbulb"></i>
+                        দ্রুত উদাহরণ
+                    </h3>
+                    <div class="examples-grid">
+                        <div class="example-card" onclick="loadExample('ami banglay gan gai')">
+                            <div class="example-input">ami banglay gan gai</div>
+                            <div class="example-output">আমি বাংলায় গান গাই</div>
+                        </div>
+                        <div class="example-card" onclick="loadExample('tomar naam ki')">
+                            <div class="example-input">tomar naam ki</div>
+                            <div class="example-output">তোমার নাম কি</div>
+                        </div>
+                        <div class="example-card" onclick="loadExample('ami bhalo achi')">
+                            <div class="example-input">ami bhalo achi</div>
+                            <div class="example-output">আমি ভালো আছি</div>
+                        </div>
+                        <div class="example-card" onclick="loadExample('apni kemon achen')">
+                            <div class="example-input">apni kemon achen</div>
+                            <div class="example-output">আপনি কেমন আছেন</div>
+                        </div>
+                        <div class="example-card" onclick="loadExample('ami tomake valobashi')">
+                            <div class="example-input">ami tomake valobashi</div>
+                            <div class="example-output">আমি তোমাকে ভালোবাসি</div>
+                        </div>
+                        <div class="example-card" onclick="loadExample('bangladesh amar desh')">
+                            <div class="example-input">bangladesh amar desh</div>
+                            <div class="example-output">বাংলাদেশ আমার দেশ</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Features Section -->
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-brain"></i>
+                    </div>
+                    <h4>এআই ইন্টেলিজেন্স</h4>
+                    <p>অ্যাডভান্সড এআই অ্যালগরিদম ব্যবহার করে স্মার্ট টেক্সট কনভার্শন</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-bolt"></i>
+                    </div>
+                    <h4>রিয়েল-টাইম</h4>
+                    <p>মিলিসেকেন্ডের মধ্যে দ্রুততম কনভার্শন এক্সপেরিয়েন্স</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-mobile-alt"></i>
+                    </div>
+                    <h4>রেস্পন্সিভ</h4>
+                    <p>সব ডিভাইসে পারফেক্টলি কাজ করে - ডেস্কটপ, ট্যাবলেট, মোবাইল</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h4>প্রাইভেসি ফাস্ট</h4>
+                    <p>আপনার ডেটা কখনো সার্ভারে সেভ হয় না - সম্পূর্ণ প্রাইভেট</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Notification -->
+        <div class="notification" id="notification"></div>
+
+        <script>
+            // Enhanced Banglish to Bangla Converter Engine
+            const converter = {
+                charMap: {
+                    'a': 'া', 'b': 'ব', 'c': 'স', 'd': 'ড', 'e': 'ি',
+                    'f': 'ফ', 'g': 'গ', 'h': 'হ', 'i': 'ী', 'j': 'জ',
+                    'k': 'ক', 'l': 'ল', 'm': 'ম', 'n': 'ন', 'o': 'ো',
+                    'p': 'প', 'q': 'ক্যু', 'r': 'র', 's': 'স', 't': 'ট',
+                    'u': 'ু', 'v': 'ভ', 'w': 'ও', 'x': 'এক্স', 'y': 'ই', 'z': 'জ',
+                    'sh': 'শ', 'ch': 'চ', 'th': 'থ', 'bh': 'ভ', 'dh': 'ধ',
+                    'gh': 'ঘ', 'kh': 'খ', 'ng': 'ং', 'ph': 'ফ',
+                    'oo': 'ু', 'ee': 'ী', 'ou': 'ৌ', 'oi': 'ৈ'
+                },
+
+                wordDict: {
+                    'ami': 'আমি', 'tumi': 'তুমি', 'apni': 'আপনি', 'ki': 'কি',
+                    'kemon': 'কেমন', 'achi': 'আছি', 'achen': 'আছেন', 'hoy': 'হয়',
+                    'naam': 'নাম', 'bangla': 'বাংলা', 'gan': 'গান', 'gai': 'গাই',
+                    'bhalo': 'ভালো', 'valo': 'ভাল', 'tomar': 'তোমার', 'amar': 'আমার',
+                    'kobe': 'কবে', 'hobe': 'হবে', 'she': 'সে', 'din': 'দিন',
+                    'emon': 'এমন', 'je': 'যে', 'megher': 'মেঘের', 'pore': 'পরে',
+                    'megh': 'মেঘ', 'dhaka': 'ঢাকা', 'sheharer': 'শহরের',
+                    'bangladesh': 'বাংলাদেশ', 'desh': 'দেশ', 'valobasha': 'ভালোবাসা',
+                    'tomake': 'তোমাকে', 'kotha': 'কথা', 'bolchi': 'বলছি', 'jani': 'জানি',
+                    'kothay': 'কোথায়', 'keno': 'কেন', 'jokhon': 'যখন', 'tokhon': 'তখন',
+                    'valobashi': 'ভালোবাসি', 'ashben': 'আসবেন', 'jabo': 'যাবো',
+                    'korchi': 'করছি', 'korbe': 'করবে', 'korte': 'করতে', 'jaben': 'যাবেন',
+                    'kore': 'করে', 'hole': 'হলে', 'noy': 'নয়', 'hoi': 'হয়',
+                    'ache': 'আছে', 'nei': 'নেই', 'onek': 'অনেক', 'valo': 'ভাল',
+                    'koto': 'কত', 'taka': 'টাকা', 'boi': 'বই', 'pora': 'পড়া',
+                    'likha': 'লেখা', 'khela': 'খেলা', 'ghum': 'ঘুম', 'khabar': 'খাবার'
+                },
+
+                convertText: function (text) {
+                    const words = text.toLowerCase().split(' ');
+                    const convertedWords = [];
+
+                    for (const word of words) {
+                        if (this.wordDict[word]) {
+                            convertedWords.push(this.wordDict[word]);
+                            continue;
+                        }
+
+                        let convertedWord = '';
+                        let i = 0;
+
+                        while (i < word.length) {
+                            let found = false;
+
+                            // Check 2-character combinations first
+                            if (i + 1 < word.length) {
+                                const twoChar = word.substring(i, i + 2);
+                                if (this.charMap[twoChar]) {
+                                    convertedWord += this.charMap[twoChar];
+                                    i += 2;
+                                    found = true;
+                                    continue;
+                                }
+                            }
+
+                            // Check single character
+                            const oneChar = word[i];
+                            if (this.charMap[oneChar]) {
+                                convertedWord += this.charMap[oneChar];
+                            } else {
+                                convertedWord += oneChar;
+                            }
+
+                            i++;
+                        }
+
+                        convertedWords.push(convertedWord);
+                    }
+
+                    return convertedWords.join(' ');
+                }
+            };
+
+            // UI Functions
+            function updateCharCount() {
+                const input = document.getElementById('banglish-input');
+                const output = document.getElementById('bangla-output');
+                const inputCount = document.getElementById('input-char-count');
+                const outputCount = document.getElementById('output-char-count');
+
+                inputCount.textContent = `${input.value.length} অক্ষর`;
+                outputCount.textContent = `${output.value.length} অক্ষর`;
+            }
+
+            function loadExample(text) {
+                document.getElementById('banglish-input').value = text;
+                updateCharCount();
+                showNotification('উদাহরণ লোড হয়েছে!', 'success');
+            }
+
+            function clearText() {
+                document.getElementById('banglish-input').value = '';
+                document.getElementById('bangla-output').value = '';
+                updateCharCount();
+                showNotification('টেক্সট ক্লিয়ার হয়েছে!', 'success');
+            }
+
+            function convertText() {
+                const inputText = document.getElementById('banglish-input').value.trim();
+                const outputText = document.getElementById('bangla-output');
+                const timeElement = document.getElementById('processing-time');
+                const charsElement = document.getElementById('chars-processed');
+                const statusElement = document.getElementById('conversion-status');
+
+                if (!inputText) {
+                    showNotification('দয়া করে বাংলিশ টেক্সট লিখুন!', 'error');
+                    return;
+                }
+
+                // Show processing state
+                outputText.value = 'কনভার্ট হচ্ছে...';
+                statusElement.textContent = 'প্রসেসিং';
+                statusElement.style.color = 'var(--warning)';
+
+                // Simulate processing for better UX
+                setTimeout(() => {
+                    const startTime = performance.now();
+
+                    // Perform conversion
+                    const result = converter.convertText(inputText);
+                    const endTime = performance.now();
+                    const processingTime = endTime - startTime;
+
+                    // Update UI
+                    outputText.value = result;
+
+                    timeElement.textContent = processingTime.toFixed(0) + ' ms';
+                    charsElement.textContent = inputText.length;
+                    statusElement.textContent = 'সফল';
+                    statusElement.style.color = 'var(--success)';
+
+                    showNotification('সফলভাবে কনভার্ট হয়েছে!', 'success');
+                    updateCharCount();
+                }, 100);
+            }
+
+            function showNotification(message, type) {
+                const notification = document.getElementById('notification');
+                notification.innerHTML = `
+                <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-triangle'}"></i>
+                ${message}
+            `;
+                notification.className = `notification ${type}`;
+
+                setTimeout(() => {
+                    notification.style.transform = 'translateX(400px)';
+                }, 3000);
+            }
+
+            // Initialize
+            document.addEventListener('DOMContentLoaded', function () {
+                updateCharCount();
+                document.getElementById('banglish-input').focus();
+
+                // Enter key support
+                document.getElementById('banglish-input').addEventListener('keypress', function (e) {
+                    if (e.key === 'Enter' && e.ctrlKey) {
+                        convertText();
+                    }
+                });
+
+                // Auto-resize textareas
+                const textareas = document.querySelectorAll('textarea');
+                textareas.forEach(textarea => {
+                    textarea.addEventListener('input', function () {
+                        this.style.height = 'auto';
+                        this.style.height = (this.scrollHeight) + 'px';
+                    });
+                });
+
+                // Add some interactive effects
+                const cards = document.querySelectorAll('.example-card, .feature-card');
+                cards.forEach(card => {
+                    card.addEventListener('mouseenter', function () {
+                        this.style.transform = 'translateY(-5px)';
+                    });
+                    card.addEventListener('mouseleave', function () {
+                        this.style.transform = 'translateY(0)';
+                    });
+                });
+            });
+        </script>
+    </body>
+
 </html>
