@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="bn">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>বাংলিশ থেকে বাংলা কনভার্টার - Transformer NLP প্রজেক্ট</title>
+        <style>
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+
+            :root {
+                --primary: #3498db;
+                --secondary: #2c3e50;
+                --accent: #e74c3c;
+                --success: #27ae60;
+                --warning: #f39c12;
+                --light: #ecf0f1;
+                --dark: #2c3e50;
+                --text: #333;
+                --text-light: #7f8c8d;
+            }
+
+            body {
+                font-family: 'Segoe UI', 'Nirmala UI', Tahoma, Geneva, Verdana, sans-serif;
+                line-height: 1.6;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                min-height: 100vh;
+                padding: 20px;
+                color: var(--text);
+            }
+
+            .container {
+                max-width: 1000px;
+                margin: 0 auto;
+                background: white;
+                border-radius: 20px;
+                box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+                overflow: hidden;
+            }
+
+            header {
+                background: linear-gradient(135deg, var(--secondary) 0%, var(--primary) 100%);
+                color: white;
+                padding: 50px 40px;
+                text-align: center;
+                position: relative;
+                overflow: hidden;
+            }
+
+            header::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" opacity="0.1"><text x="50%" y="50%" font-size="20" text-anchor="middle" dominant-baseline="middle" font-family="Arial">বাংলা</text></svg>');
+                background-size: 200px;
+            }
+
+            header h1 {
+                font-size: 3em;
+                margin-bottom: 15px;
+                font-weight: 300;
+                position: relative;
+            }
+
+            header .subtitle {
+                font-size: 1.3em;
+                opacity: 0.9;
+                margin-bottom: 10px;
+            }
+
+            header .tech-stack {
+                font-size: 1em;
+                opacity: 0.8;
+                background: rgba(255, 255, 255, 0.1);
+                display: inline-block;
+                padding: 8px 20px;
+                border-radius: 20px;
+                margin-top: 15px;
+            }
+
+            .main-content {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 30px;
+                padding: 40px;
+            }
+
+            @media (max-width: 768px) {
+                .main-content {
+                    grid-template-columns: 1fr;
+                }
+            }
+
+            .converter-section {
+                background: var(--light);
+                padding: 30px;
+                border-radius: 15px;
+                border: 2px solid #e0e0e0;
+            }
+
+            .input-group,
+            .output-group {
+                margin-bottom: 25px;
+            }
+
+            label {
+                display: block;
+                margin-bottom: 12px;
+                font-weight: 600;
+                color: var(--secondary);
+                font-size: 1.1em;
+            }
+
+            textarea {
+                width: 100%;
+                padding: 20px;
+                border: 2px solid #ddd;
+                border-radius: 12px;
+                font-size: 16px;
+                resize: vertical;
+                min-height: 150px;
+                font-family: inherit;
+                transition: all 0.3s ease;
+                background: white;
+            }
+
+            textarea:focus {
+                outline: none;
+                border-color: var(--primary);
+                box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+            }
+
+            #banglish-input {
+                background: #f8f9fa;
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            }
+
+            #bangla-output {
+                background: #e8f5e8;
+                color: #2d5016;
+                font-weight: 500;
+                font-family: 'Nirmala UI', 'Segoe UI', sans-serif;
+                font-size: 18px;
+                line-height: 1.8;
+            }
+
+            .button-group {
+                display: flex;
+                gap: 15px;
+                flex-wrap: wrap;
+            }
+
+            button {
+                background: linear-gradient(135deg, var(--primary) 0%, #2980b9 100%);
+                color: white;
+                border: none;
+                padding: 15px 30px;
+                border-radius: 12px;
+                cursor: pointer;
+                font-size: 16px;
+                font-weight: 600;
+                transition: all 0.3s ease;
+                flex: 1;
+                min-width: 120px;
+            }
+
+            button:hover {
+                transform: translateY(-3px);
+                box-shadow: 0 10px 25px rgba(52, 152, 219, 0.3);
+            }
+
+            button.secondary {
+                background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%);
+            }
+
+            button.success {
+                background: linear-gradient(135deg, var(--success) 0%, #229954 100%);
+            }
+
+            .stats {
+                background: white;
+                padding: 20px;
+                border-radius: 12px;
+                border: 2px solid #e0e0e0;
+                margin-top: 20px;
+            }
+
+            .stat-item {
+                display: flex;
+                justify-content: between;
+                margin-bottom: 10px;
+                padding: 8px 0;
+                border-bottom: 1px solid #eee;
+            }
+
+            .stat-label {
+                font-weight: 600;
+                color: var(--text-light);
+                flex: 1;
+            }
+
+            .stat-value {
+                font-weight: 600;
+                color: var(--secondary);
+            }
+
+            .examples-section {
+                background: var(--light);
+                padding: 30px;
+                border-radius: 15px;
+            }
+
+            .examples-grid {
+                display: grid;
+                gap: 15px;
+                margin-top: 20px;
+            }
+
+            .example-card {
+                background: white;
+                padding: 20px;
+                border-radius: 10px;
+                border: 2px solid #e0e0e0;
+                cursor: pointer;
+                transition: all 0.3s ease;
+            }
+
+            .example-card:hover {
+                border-color: var(--primary);
+                transform: translateY(-2px);
+                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            }
+
+            .example-input {
+                font-family: 'Courier New', monospace;
+                color: var(--accent);
+                margin-bottom: 8px;
+            }
+
+            .example-output {
+                font-family: 'Nirmala UI', sans-serif;
+                color: var(--success);
+                font-weight: 500;
+            }
+
+            .project-info {
+                background: white;
+                padding: 40px;
+                border-top: 3px solid var(--light);
+            }
+
+            .info-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+                gap: 30px;
+                margin-top: 20px;
+            }
+
+            .info-card {
+                background: var(--light);
+                padding: 25px;
+                border-radius: 12px;
+                border-left: 4px solid var(--primary);
+            }
+
+            .info-card h4 {
+                color: var(--secondary);
+                margin-bottom: 15px;
+                font-size: 1.2em;
+            }
+
+            .info-card ul {
+                list-style: none;
+            }
+
+            .info-card li {
+                padding: 8px 0;
+                border-bottom: 1px solid #ddd;
+            }
+
+            .info-card li:last-child {
+                border-bottom: none;
+            }
+
+            .info-card strong {
+                color: var(--secondary);
+            }
+
+            .loading {
+                display: none;
+                text-align: center;
+                padding: 20px;
+            }
+
+            .spinner {
+                border: 4px solid #f3f3f3;
+                border-top: 4px solid var(--primary);
+                border-radius: 50%;
+                width: 40px;
+                height: 40px;
+                animation: spin 1s linear infinite;
+                margin: 0 auto 15px;
+            }
+
+            @keyframes spin {
+                0% {
+                    transform: rotate(0deg);
+                }
+
+                100% {
+                    transform: rotate(360deg);
+                }
+            }
+
+            .notification {
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 15px 25px;
+                border-radius: 10px;
+                color: white;
+                font-weight: 600;
+                z-index: 1000;
+                transform: translateX(400px);
+                transition: transform 0.3s ease;
+            }
+
+            .notification.success {
+                background: var(--success);
+                transform: translateX(0);
+            }
+
+            .notification.error {
+                background: var(--accent);
+                transform: translateX(0);
+            }
+
+            .char-count {
+                text-align: right;
+                font-size: 0.9em;
+                color: var(--text-light);
+                margin-top: 5px;
+            }
+        </style>
+    </head>
+
+    <body>
+        <div class="container">
+            <header>
+                <h1>বাংলিশ থেকে বাংলা কনভার্টার</h1>
+                <div class="subtitle">ট্রান্সফরমার আর্কিটেকচার ভিত্তিক জেনারেটিভ এআই মডেল</div>
+                <div class="tech-stack">PyTorch • Transformers • Flask • NLP</div>
+            </header>
+
+            <div class="main-content">
+                <div class="converter-section">
+                    <div class="input-group">
+                        <label for="banglish-input">বাংলিশ টেক্সট লিখুন:</label>
+                        <textarea id="banglish-input"
+                            placeholder="যেমন: ami banglay gan gai, tomar naam ki, ami tomake valobashi..."
+                            oninput="updateCharCount()"></textarea>
+                        <div class="char-count" id="input-char-count">০ characters</div>
+                    </div>
+
+                    <div class="button-group">
+                        <button onclick="convertText()" class="success">
+                            🔄 কনভার্ট করুন
+                        </button>
+                        <button onclick="clearText()" class="secondary">
+                            🗑️ ক্লিয়ার
+                        </button>
+                    </div>
+
+                    <div class="output-group">
+                        <label for="bangla-output">বাংলা আউটপুট:</label>
+                        <textarea id="bangla-output" readonly></textarea>
+                        <div class="char-count" id="output-char-count">০ characters</div>
+                    </div>
+
+                    <div class="stats" id="conversion-stats" style="display: none;">
+                        <div class="stat-item">
+                            <span class="stat-label">প্রসেসিং সময়:</span>
+                            <span class="stat-value" id="processing-time">-</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">ক্যারেক্টার প্রসেসড:</span>
+                            <span class="stat-value" id="chars-processed">-</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">স্ট্যাটাস:</span>
+                            <span class="stat-value" id="conversion-status">Success</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="examples-section">
+                    <h3>📚 সাধারণ উদাহরণ</h3>
+                    <div class="examples-grid">
+                        <div class="example-card" onclick="loadExample('ami banglay gan gai')">
+                            <div class="example-input">ami banglay gan gai</div>
+                            <div class="example-output">আমি বাংলায় গান গাই</div>
+                        </div>
+                        <div class="example-card" onclick="loadExample('tomar naam ki')">
+                            <div class="example-input">tomar naam ki</div>
+                            <div class="example-output">তোমার নাম কি</div>
+                        </div>
+                        <div class="example-card" onclick="loadExample('ami bhalo achi')">
+                            <div class="example-input">ami bhalo achi</div>
+                            <div class="example-output">আমি ভালো আছি</div>
+                        </div>
+                        <div class="example-card" onclick="loadExample('apni kemon achen')">
+                            <div class="example-input">apni kemon achen</div>
+                            <div class="example-output">আপনি কেমন আছেন</div>
+                        </div>
+                        <div class="example-card" onclick="loadExample('ami tomake valobashi')">
+                            <div class="example-input">ami tomake valobashi</div>
+                            <div class="example-output">আমি তোমাকে ভালোবাসি</div>
+                        </div>
+                        <div class="example-card" onclick="loadExample('bangladesh amar desh')">
+                            <div class="example-input">bangladesh amar desh</div>
+                            <div class="example-output">বাংলাদেশ আমার দেশ</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="project-info">
+                <h3>🔬 প্রজেক্ট সম্পর্কে বিস্তারিত</h3>
+                <div class="info-grid">
+                    <div class="info-card">
+                        <h4>🏗️ আর্কিটেকচার</h4>
+                        <ul>
+                            <li><strong>মডেল:</strong> Transformer-based Seq2Seq</li>
+                            <li><strong>Embedding:</strong> Character-level</li>
+                            <li><strong>Layers:</strong> Multi-head Attention</li>
+                            <li><strong>Framework:</strong> PyTorch</li>
+                        </ul>
+                    </div>
+                    <div class="info-card">
+                        <h4>⚡ টেকনোলজি স্ট্যাক</h4>
+                        <ul>
+                            <li><strong>Backend:</strong> Flask + Python</li>
+                            <li><strong>Frontend:</strong> HTML5 + CSS3 + JS</li>
+                            <li><strong>NLP:</strong> Custom Transformer</li>
+                            <li><strong>Deployment:</strong> Local Server</li>
+                        </ul>
+                    </div>
+                    <div class="info-card">
+                        <h4>🎯 ফিচারস</h4>
+                        <ul>
+                            <li>Real-time conversion</li>
+                            <li>Context-aware processing</li>
+                            <li>Performance analytics</li>
+                            <li>Batch processing support</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <div>কনভার্ট হচ্ছে...</div>
+        </div>
+
+        <div class="notification" id="notification"></div>
+
+        <script>
+            function updateCharCount() {
+                const input = document.getElementById('banglish-input');
+                const output = document.getElementById('bangla-output');
+                const inputCount = document.getElementById('input-char-count');
+                const outputCount = document.getElementById('output-char-count');
+
+                inputCount.textContent = `${input.value.length} characters`;
+                outputCount.textContent = `${output.value.length} characters`;
+            }
+
+            function loadExample(text) {
+                document.getElementById('banglish-input').value = text;
+                updateCharCount();
+                showNotification('Example loaded!', 'success');
+            }
+
+            function clearText() {
+                document.getElementById('banglish-input').value = '';
+                document.getElementById('bangla-output').value = '';
+                document.getElementById('conversion-stats').style.display = 'none';
+                updateCharCount();
+                showNotification('Text cleared!', 'success');
+            }
+
+            async function convertText() {
+                const inputText = document.getElementById('banglish-input').value.trim();
+                const outputText = document.getElementById('bangla-output');
+                const loading = document.getElementById('loading');
+                const stats = document.getElementById('conversion-stats');
+
+                if (!inputText) {
+                    showNotification('দয়া করে বাংলিশ টেক্সট লিখুন!', 'error');
+                    return;
+                }
+
+                loading.style.display = 'block';
+
+                try {
+                    const response = await fetch('/convert', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ text: inputText })
+                    });
+
+                    const data = await response.json();
+
+                    if (data.success) {
+                        outputText.value = data.bangla;
+
+                        // Update stats
+                        document.getElementById('processing-time').textContent =
+                            `${data.processing_time_ms} ms`;
+                        document.getElementById('chars-processed').textContent =
+                            data.characters_processed;
+                        document.getElementById('conversion-status').textContent =
+                            'Success';
+                        document.getElementById('conversion-status').style.color = '#27ae60';
+
+                        stats.style.display = 'block';
+                        showNotification('সফলভাবে কনভার্ট হয়েছে!', 'success');
+                    } else {
+                        outputText.value = `Error: ${data.error}`;
+                        showNotification(`Error: ${data.error}`, 'error');
+                    }
+                } catch (error) {
+                    outputText.value = `Network error: ${error.message}`;
+                    showNotification(`Network error: ${error.message}`, 'error');
+                } finally {
+                    loading.style.display = 'none';
+                    updateCharCount();
+                }
+            }
+
+            function showNotification(message, type) {
+                const notification = document.getElementById('notification');
+                notification.textContent = message;
+                notification.className = `notification ${type}`;
+
+                setTimeout(() => {
+                    notification.style.transform = 'translateX(400px)';
+                }, 3000);
+            }
+
+            // Initialize character count
+            updateCharCount();
+
+            // Enter key support
+            document.getElementById('banglish-input').addEventListener('keypress', function (e) {
+                if (e.key === 'Enter' && e.ctrlKey) {
+                    convertText();
+                }
+            });
+
+            // Auto-focus on input
+            document.getElementById('banglish-input').focus();
+        </script>
+    </body>
+
+</html>
